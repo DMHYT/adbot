@@ -38,7 +38,7 @@ def get_positive_int_input(hint: str, seconds=False) -> int:
         else:
             return result
     except ValueError:
-        print("ERROR! Input data must be of integer type. Try again...")
+        print("ERROR! Input data must be of integer type and be non-negative. Try again...")
         return get_positive_int_input(hint)
 
 
