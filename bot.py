@@ -85,11 +85,12 @@ class Bot:
     # adds new ad pause and increments the time, until the end of the
     # video's total duration is reached
     def run(self) -> None:
-        while self.__can_time_be_incremented__():
-            self.__clear_timeline__()
-            self.__write_time__()
-            self.__add_pause__()
-            self.__increment_time__()
-        print("Finished!")
+        if not (self.add_x == 0 or self.add_y == 0 or self.timeline_x == 0 or self.timeline_y == 0):
+            while self.__can_time_be_incremented__():
+                self.__clear_timeline__()
+                self.__write_time__()
+                self.__add_pause__()
+                self.__increment_time__()
+            print("Finished!")
 
 # And finally, launching this script itself just does not make sense
