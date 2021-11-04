@@ -1,16 +1,27 @@
 # This file contains functions to find Tesseract-OCR on the machine,
 # and if it is not found, download it locally
 
-from urllib.request import urlretrieve
+from urllib.request import urlopen, urlretrieve
 from os import getcwd, mkdir, remove
 from os.path import join, exists, isdir, dirname
 from zipfile import ZipFile
+from bs4 import BeautifulSoup
 from utils import find_files
 
 
-# Link to the Tesseract-OCR binaries archive in case when the user
-# doesn't have it on their machine and it has to be downloaded locally
-TESS_ARCHIVE_URL = "https://download1478.mediafire.com/pi2i3mh4v4rg/mni87p6m5f7c1qt/Tesseract-OCR.zip"
+# Method to get the direct link to download Tesseract-OCR binaries archive
+# Here we will use BeautifulSoup module for HTML parsing
+# in order to find download button on the web-page and get its link
+def get_archive_url() -> str:
+    print("DEBUG: Getting direct link to Tesseract-OCR binaries archive...")
+    response = urlopen("https://www.mediafire.com/file/mni87p6m5f7c1qt/Tesseract-OCR.zip/file")
+    content = response.read().decode('utf-8')
+    soup = BeautifulSoup(content, features="html.parser")
+    button = soup.find_all("a", { "class": "input popsok" })
+    link = button[0]['href']
+    print("DEBUG: The link is " + link)
+    print("DEBUG: Downloading...")
+    return link
 
 
 # This function is used to find Tesseract-OCR on the machine
@@ -44,7 +55,7 @@ def get_tesseract_cmd_path():
         print("WARNING: Tesseract was not found on your machine! Downloading binaries archive...")
         archive_path = join(getcwd(), "tess-binaries.zip")
         # Downloading file from the URL
-        urlretrieve(url=TESS_ARCHIVE_URL, filename=archive_path)
+        urlretrieve(url=get_archive_url(), filename=archive_path)
         print("DEBUG: Archive has been downloaded, extracting...")
         # Creating local folder `.tess`
         binaries_path = join(getcwd(), ".tess")
@@ -71,4 +82,5 @@ def get_tesseract_cmd_path():
 # It will look for Tesseract-OCR on your machine,
 # and if not found, download it locally from the Internet
 if __name__ == "__main__":
-    get_tesseract_cmd_path()
+    # get_tesseract_cmd_path()
+    print(get_archive_url())
