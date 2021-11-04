@@ -1,16 +1,27 @@
 # Этот файл содержит функции для того, чтобы найти Tesseract-OCR на компьютере,
 # а если он не был найден, установить его локально
 
-from urllib.request import urlretrieve
+from urllib.request import urlopen, urlretrieve
 from os import getcwd, mkdir, remove
 from os.path import join, exists, isdir, dirname
 from zipfile import ZipFile
+from bs4 import BeautifulSoup
 from utils import find_files
 
 
-# Ссылка на архив с бинарниками Tesseract-OCR в случае если его нет
-# на компьютере пользователя и его нужно установить локально
-TESS_ARCHIVE_URL = "https://download1478.mediafire.com/pi2i3mh4v4rg/mni87p6m5f7c1qt/Tesseract-OCR.zip"
+# Метод для получения прямой ссылки на скачивание архива бинарников Tesseract-OCR
+# Здесь мы используем модуль BeautifulSoup для парсинга HTML,
+# для того, чтобы найти кнопку скачивания на веб-странице и получить её ссылку
+def get_archive_url() -> str:
+    print("ОТЛАДКА: Получение прямой ссылки на архив бинарников Tesseract-OCR...")
+    response = urlopen("https://www.mediafire.com/file/mni87p6m5f7c1qt/Tesseract-OCR.zip/file")
+    content = response.read().decode('utf-8')
+    soup = BeautifulSoup(content, features="html.parser")
+    button = soup.find_all("a", { "class": "input popsok" })
+    link = button[0]['href']
+    print("ОТЛАДКА: Ссылка - " + link)
+    print("ОТЛАДКА: Скачивание...")
+    return link
 
 
 # Эта функция используется для того, чтобы найти Tesseract-OCR на компьютере
@@ -44,7 +55,7 @@ def get_tesseract_cmd_path():
         print("ПРЕДУПРЕЖДЕНИЕ: Tesseract не был найден на вашем компьютере! Установка архива бинарников...")
         archive_path = join(getcwd(), "tess-binaries.zip")
         # Скачиваем файл с URL
-        urlretrieve(url=TESS_ARCHIVE_URL, filename=archive_path)
+        urlretrieve(url=get_archive_url(), filename=archive_path)
         print("ОТЛАДКА: Архив был скачан, извлечение...")
         # Создаём локальную папку `.tess`
         binaries_path = join(getcwd(), ".tess")
