@@ -20,7 +20,7 @@ import pytesseract as tess
 # представленный как numpy-массив пикселей, в объект Image,
 # для использования его в Tesseract-OCR
 from cv2 import cvtColor, COLOR_BGR2GRAY
-# Функция для получения ширину и высоту монитора в пикселях из скрипта utils.py
+# Функция для получения ширины и высоты монитора в пикселях из скрипта utils.py
 from utils import get_monitor_size
 # Функция для получения пути к бинарникам Tesseract-OCR из скрипта tesseract.py
 from tesseract import get_tesseract_cmd_path
